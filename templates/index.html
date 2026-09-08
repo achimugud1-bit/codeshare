@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeShare - Share Your Code Snippets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 CodeShare</h1>
+            <p class="tagline">Share code snippets with automatic language detection</p>
+        </header>
+
+        <main>
+            <!-- Create Snippet Section -->
+            <section class="create-snippet">
+                <h2>Create New Snippet</h2>
+                <form id="snippet-form">
+                    <div class="form-group">
+                        <label for="title">Snippet Title</label>
+                        <input type="text" id="title" name="title" placeholder="Enter a title for your snippet" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="code">Your Code</label>
+                        <textarea id="code" name="code" placeholder="Paste or type your code here..." rows="12" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="language-select">Language</label>
+                            <select id="language-select" name="language">
+                                <option value="auto">Auto-detect</option>
+                                <option value="python">Python</option>
+                                <option value="javascript">JavaScript</option>
+                                <option value="java">Java</option>
+                                <option value="cpp">C++</option>
+                                <option value="c">C</option>
+                                <option value="php">PHP</option>
+                                <option value="ruby">Ruby</option>
+                                <option value="go">Go</option>
+                                <option value="rust">Rust</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                                <option value="sql">SQL</option>
+                                <option value="bash">Bash/Shell</option>
+                                <option value="json">JSON</option>
+                                <option value="yaml">YAML</option>
+                                <option value="plaintext">Plain Text</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Detected Language</label>
+                            <div id="detected-language" class="detected-badge">Not detected yet</div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Share Snippet</button>
+                        <button type="button" id="btn-detect" class="btn btn-secondary">Detect Language</button>
+                    </div>
+                </form>
+
+                <!-- Preview Section -->
+                <div id="preview-section" class="preview-section hidden">
+                    <h3>Preview</h3>
+                    <div class="code-preview">
+                        <div class="preview-header">
+                            <span class="preview-title" id="preview-title"></span>
+                            <span class="preview-language" id="preview-language"></span>
+                        </div>
+                        <pre><code id="preview-code"></code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Snippets List Section -->
+            <section class="snippets-list">
+                <h2>Shared Snippets</h2>
+                <div id="snippets-container">
+                    <p class="no-snippets">No snippets shared yet. Be the first!</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 CodeShare. Built with Flask & JavaScript.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
