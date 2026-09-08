@@ -305,12 +305,12 @@ def api_create_snippet():
         language = detect_language(code)
     
     snippet = {
-        'id': len(snippets) + 1,
+        'id': data.get('id') or len(snippets) + 1,
         'title': title,
         'code': code,
         'language': language,
         'highlighted_code': highlight_code(code, language),
-        'created_at': datetime.now().isoformat()
+        'created_at': data.get('created_at') or datetime.now().isoformat()
     }
     
     snippets.append(snippet)
@@ -319,6 +319,26 @@ def api_create_snippet():
         'success': True,
         'snippet': snippet
     }), 201
+
+
+@app.route('/api/snippets/<snippet_id>', methods=['GET'])
+def api_get_snippet(snippet_id):
+    """Return a single snippet by id."""
+    snippet = next((s for s in snippets if str(s.get('id')) == str(snippet_id)), None)
+    if not snippet:
+        return jsonify({'error': 'Not found'}), 404
+    return jsonify({'snippet': snippet})
+
+
+@app.route('/api/snippets/<snippet_id>', methods=['DELETE'])
+def api_delete_snippet(snippet_id):
+    """Delete a snippet by id."""
+    global snippets
+    before = len(snippets)
+    snippets = [s for s in snippets if str(s.get('id')) != str(snippet_id)]
+    if len(snippets) == before:
+        return jsonify({'error': 'Not found'}), 404
+    return jsonify({'success': True})
 
 
 @app.route('/api/languages', methods=['GET'])
