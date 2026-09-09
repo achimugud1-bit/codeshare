@@ -9,3 +9,66 @@
 .panel{padding:18px}.progress-bar{height:10px;background:var(--cc-card2);border-radius:999px;overflow:hidden}.progress-fill{height:100%;width:0;background:var(--cc-primary);transition:width .2s}.progress-status{font-weight:650;margin:13px 0 2px}.results-list{padding:0 18px 10px}.result-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(128,128,128,.14)}.result-icon{font-size:21px}.result-sizes{font-size:.78rem;color:var(--cc-muted)}.saved{color:var(--cc-success);font-weight:700;font-size:.8rem}.results-footer{border-top:1px solid var(--cc-border)}.result-total{display:flex;flex-direction:column;color:var(--cc-muted);font-size:.78rem}.result-total strong{color:var(--cc-text);font-size:1rem}
 .hidden{display:none!important}.modal{position:fixed;inset:0;background:rgba(0,0,0,.68);z-index:100;display:grid;place-items:center;padding:18px}.modal-card{width:min(700px,100%);max-height:90vh;overflow:auto;background:var(--cc-card);border:1px solid var(--cc-border);border-radius:16px;box-shadow:0 25px 80px rgba(0,0,0,.45);padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:start}.modal-file-name{margin:10px 0 18px;color:var(--cc-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.options-grid label{display:flex;flex-direction:column;gap:7px;font-size:.84rem;font-weight:650}.options-grid input,.options-grid select{width:100%;padding:10px;background:var(--cc-card2);border:1px solid var(--cc-border);border-radius:8px;color:var(--cc-text)}.input-suffix{display:flex}.input-suffix select{margin-top:-46px;margin-left:auto;width:90px;border:0;background:transparent}.check-row{display:flex;align-items:center;gap:9px;margin-top:15px;color:var(--cc-muted);font-size:.82rem}.check-row input{accent-color:var(--cc-primary)}.hint{color:var(--cc-muted);font-size:.76rem;margin:14px 0}.modal-actions{display:flex;justify-content:flex-end;margin-top:16px}.video-only{display:none!important}.modal.video-mode .video-only{display:flex!important}
 @media(max-width:800px){.hero{align-items:start;flex-direction:column}.hero-badge{align-self:flex-start}.file-row{grid-template-columns:42px minmax(0,1fr) auto;gap:10px}.file-convert{grid-column:2/-1}.file-row .remove-file{grid-column:3;grid-row:1}.file-row .options-btn{grid-column:2}.queue-footer,.results-footer{align-items:stretch;flex-direction:column}.queue-footer .btn,.results-footer .btn{width:100%}.options-grid{grid-template-columns:1fr}.result-row{grid-template-columns:30px minmax(0,1fr) auto}.result-row .result-download{grid-column:2/-1}.compressor-app{padding-inline:12px}}
+
+/* Batch + per-file controls */
+.queue-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.file-row {
+  display: grid;
+  grid-template-columns: 52px minmax(180px, 1fr) minmax(150px, 190px) auto auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(127,127,127,.16);
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.file-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgba(127,127,127,.1);
+  font-size: 22px;
+}
+
+.file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.file-name { font-weight: 650; overflow-wrap: anywhere; }
+.file-meta { font-size: 12px; opacity: .68; margin-top: 4px; }
+.file-status { font-size: 12px; margin-top: 5px; }
+.file-status.success { opacity: .85; }
+.file-status.error { color: #e05252; }
+
+.btn-small { padding: 8px 10px; white-space: nowrap; }
+.btn-compress-file { min-width: 82px; }
+.btn-compress-file:disabled { opacity: .55; cursor: wait; }
+
+.download-file { font-size: 20px; }
+
+.modal-card.video-mode .video-only { display: flex; }
+.modal-card:not(.video-mode) .video-only { display: none; }
+
+@media (max-width: 1000px) {
+  .file-row { grid-template-columns: 52px minmax(150px,1fr) auto auto auto; }
+  .file-convert { grid-column: 2 / 3; }
+}
+
+@media (max-width: 700px) {
+  .queue-head-actions { width: 100%; justify-content: flex-start; }
+  .file-row { grid-template-columns: 46px 1fr auto; }
+  .file-thumb { width: 46px; height: 46px; }
+  .file-convert { grid-column: 2 / 3; }
+  .options-btn { grid-column: 2 / 3; }
+  .btn-compress-file { grid-column: 2 / 3; justify-self: start; }
+  .download-file, .remove-file { grid-row: 1; }
+  .remove-file { grid-column: 3; }
+}
