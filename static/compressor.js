@@ -269,7 +269,7 @@
       original += r.file.size; if (!r.error) { ok++; out += r.blob.size; }
       const row = document.createElement('div'); row.className = 'result-row';
       row.innerHTML = `<div class="result-icon">${isImage(r.file) ? '🖼' : '🎥'}</div><div><div class="file-name">${escapeHtml(r.file.name)}</div><div class="result-sizes">${fmtBytes(r.file.size)} → ${r.error ? 'Failed' : fmtBytes(r.blob.size)}</div></div><div class="saved">${r.error ? 'Error' : `${Math.max(0, ((1 - r.blob.size / r.file.size) * 100)).toFixed(0)}% saved`}</div>`;
-      if (!r.error) { const b = document.createElement('button'); b.className = 'btn btn-secondary result-download'; b.textContent = 'Download'; b.onclick = () => downloadBlob(r.blob, r.file.name, r.mime); row.append(b); }
+      if (!r.error) { const b = document.createElement('button'); b.className = 'btn btn-secondary result-download'; b.textContent = 'Download'; b.onclick = () => downloadBlob(r.blob, outputFileName(r.file.name, r.mime || r.blob.type), r.mime || r.blob.type); row.append(b); }
       else { const err = document.createElement('div'); err.className = 'muted result-download'; err.textContent = r.error; row.append(err); }
       els.resultsList.append(row);
     });
@@ -277,18 +277,33 @@
     els.totalResultSize.textContent = ok ? `${fmtBytes(original)} → ${fmtBytes(out)}` : '—';
   }
 
+  function outputFileName(originalName, mime) {
+    const outputExt = ext(mime);
+    const originalExt = (originalName.match(/\.([^.]+)$/)?.[1] || '').toLowerCase();
+    if (!outputExt || outputExt === originalExt) return originalName;
+    return `${originalName.replace(/\.[^.]+$/, '')}.${outputExt}`;
+  }
+
   function downloadBlob(blob, name, mime) {
     const a = document.createElement('a'), url = URL.createObjectURL(blob);
-    a.href = url; a.download = `${name.replace(/\.[^.]+$/, '')}-compressed.${ext(mime || blob.type)}`;
+    a.href = url; a.download = name;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   async function downloadAll() {
     const ok = results.filter(r => !r.error); if (!ok.length) return;
-    if (window.JSZip) {
-      const zip = new JSZip(); ok.forEach(r => zip.file(`${r.file.name.replace(/\.[^.]+$/, '')}-compressed.${ext(r.mime || r.blob.type)}`, r.blob));
-      const blob = await zip.generateAsync({ type: 'blob' }); downloadBlob(blob, 'codeshare-compressed.zip', 'application/zip');
-    } else alert('ZIP support is not loaded. Download the files individually or add JSZip to the page.');
+    if (!window.JSZip) { alert('ZIP support could not be loaded. Please refresh the page and try again.'); return; }
+    const zip = new JSZip();
+    const usedNames = new Map();
+    ok.forEach(r => {
+      const baseName = outputFileName(r.file.name, r.mime || r.blob.type);
+      const count = usedNames.get(baseName) || 0;
+      usedNames.set(baseName, count + 1);
+      const finalName = count === 0 ? baseName : `${baseName.replace(/(\.[^.]+)$/, '')} (${count + 1})$1`;
+      zip.file(finalName, r.blob);
+    });
+    const blob = await zip.generateAsync({ type: 'blob', compression: 'STORE' });
+    downloadBlob(blob, 'codeshare-compressed.zip', 'application/zip');
   }
 
   function reset() { files.splice(0); results = []; els.resultsSection.classList.add('hidden'); els.progressSection.classList.add('hidden'); renderQueue(); }
