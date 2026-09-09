@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeShare - Share Your Code Snippets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app">
+        <header class="topbar">
+            <div class="brand">
+                <span class="logo" aria-hidden="true">📝</span>
+                <div>
+                    <h1>CodeShare</h1>
+                    <p class="tagline">Paste, detect, highlight, and share snippets</p>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button type="button" id="btn-theme" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">◐</button>
+            </div>
+        </header>
+
+        <main>
+            <section class="panel create-snippet">
+                <div class="panel-head">
+                    <h2>Create snippet</h2>
+                    <p class="hint">Enter auto-indents · Tab / Shift+Tab · Ctrl+Enter shares · Ctrl+Shift+Enter runs</p>
+                </div>
+                <form id="snippet-form">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" placeholder="Binary search in Python" maxlength="120">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="code">Code</label>
+                            <span id="code-stats" class="muted">0 lines · 0 chars</span>
+                        </div>
+                        <textarea id="code" name="code" placeholder="Paste or type your code here..." rows="14" required spellcheck="false"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="language-select">Language</label>
+                            <select id="language-select" name="language">
+                                <option value="auto">Auto-detect</option>
+                                <option value="python">Python</option>
+                                <option value="javascript">JavaScript</option>
+                                <option value="java">Java</option>
+                                <option value="cpp">C++</option>
+                                <option value="c">C</option>
+                                <option value="php">PHP</option>
+                                <option value="ruby">Ruby</option>
+                                <option value="go">Go</option>
+                                <option value="rust">Rust</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                                <option value="sql">SQL</option>
+                                <option value="bash">Bash/Shell</option>
+                                <option value="json">JSON</option>
+                                <option value="yaml">YAML</option>
+                                <option value="plaintext">Plain Text</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Detected</label>
+                            <div id="detected-language" class="detected-badge empty">Waiting for code…</div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Share snippet</button>
+                        <button type="button" id="btn-run" class="btn btn-secondary">Run</button>
+                        <button type="button" id="btn-detect" class="btn btn-secondary">Detect language</button>
+                        <button type="button" id="btn-example" class="btn btn-ghost">Load example</button>
+                        <button type="button" id="btn-clear" class="btn btn-ghost">Clear</button>
+                    </div>
+                </form>
+
+                <div id="preview-section" class="preview-section hidden">
+                    <div class="preview-toolbar">
+                        <h3>Live preview</h3>
+                        <button type="button" id="btn-wrap" class="btn btn-tiny">Wrap lines</button>
+                    </div>
+                    <div class="code-preview">
+                        <div class="preview-header">
+                            <span class="preview-title" id="preview-title">Untitled</span>
+                            <span class="preview-language" id="preview-language">plaintext</span>
+                        </div>
+                        <div class="code-frame" id="preview-frame">
+                            <pre class="gutter" id="preview-gutter" aria-hidden="true"></pre>
+                            <pre><code id="preview-code"></code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="run-panel" class="run-panel hidden">
+                    <div class="preview-toolbar">
+                        <h3>Output</h3>
+                        <button type="button" id="btn-clear-output" class="btn btn-tiny">Clear output</button>
+                    </div>
+                    <pre id="run-output" class="run-output" aria-live="polite"></pre>
+                    <iframe id="run-frame" class="run-frame hidden" sandbox="allow-scripts" title="Snippet preview"></iframe>
+                </div>
+            </section>
+
+            <section class="panel snippets-list">
+                <div class="panel-head">
+                    <h2>Library <span id="snippet-count" class="count-pill">0</span></h2>
+                </div>
+                <div class="library-tools">
+                    <input type="search" id="search" placeholder="Search title or code…" autocomplete="off">
+                    <select id="filter-language">
+                        <option value="all">All languages</option>
+                    </select>
+                    <select id="sort-snippets">
+                        <option value="newest">Newest</option>
+                        <option value="oldest">Oldest</option>
+                        <option value="title">Title A–Z</option>
+                    </select>
+                </div>
+                <div id="snippets-container">
+                    <div class="empty-state">
+                        <p class="no-snippets">No snippets yet. Share one above or load an example.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Run JavaScript, Python, HTML, CSS, or JSON in the browser. Nothing is executed on your computer’s shell.</p>
+        </footer>
+    </div>
+
+    <div id="confirm-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="modal-card">
+            <h3 id="confirm-title">Delete snippet?</h3>
+            <p id="confirm-text">This cannot be undone.</p>
+            <div class="form-actions">
+                <button type="button" id="confirm-yes" class="btn btn-danger">Delete</button>
+                <button type="button" id="confirm-no" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
