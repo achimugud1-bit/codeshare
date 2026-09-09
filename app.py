@@ -248,6 +248,12 @@ def index():
     return render_template('index.html', snippets=snippets)
 
 
+@app.route('/compressor')
+def compressor():
+    """Render the media compressor page."""
+    return render_template('compressor.html')
+
+
 @app.route('/api/detect', methods=['POST'])
 def api_detect():
     """API endpoint to detect language from code."""
