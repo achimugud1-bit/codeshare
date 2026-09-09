@@ -40,7 +40,3 @@ htmlcov/
 *.egg-info/
 .eggs/
 
-# Web artifacts
-static/compressor.css
-static/compressor.js
-```
