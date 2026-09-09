@@ -1,259 +1,95 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Compressor - CodeShare</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='compressor.css') }}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Media Compressor — CodeShare</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='compressor.css') }}">
 </head>
 <body>
-    <div class="app">
-        <header class="topbar">
-            <div class="brand">
-                <a href="/" style="text-decoration: none; color: inherit;">
-                    <span class="logo" aria-hidden="true">📦</span>
-                </a>
-                <div>
-                    <h1><a href="/" style="text-decoration: none; color: inherit;">CodeShare</a></h1>
-                    <p class="tagline">Compress images and videos locally</p>
-                </div>
-            </div>
-            <div class="topbar-actions">
-                <a href="/" class="btn btn-ghost" style="margin-right: 8px;">← Back to CodeShare</a>
-                <button type="button" id="btn-theme" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">◐</button>
-            </div>
-        </header>
+  <main class="compressor-app">
+    <header class="compressor-topbar">
+      <a class="back-link" href="{{ url_for('index') }}">← CodeShare</a>
+      <div class="brand-mini"><span class="brand-mark">⌁</span><span>Media Compressor</span></div>
+      <button id="btn-theme" class="icon-btn" type="button" aria-label="Toggle theme">☾</button>
+    </header>
 
-        <main>
-            <!-- Empty State / Upload Area -->
-            <section class="panel compressor-panel" id="upload-section">
-                <div class="compressor-hero">
-                    <div class="compressor-icon">🗜️</div>
-                    <h2>Compress Media</h2>
-                    <p class="compressor-subtitle">Images and videos, smaller without sacrificing quality.</p>
-                    
-                    <div class="upload-area" id="upload-area" tabindex="0" role="button" aria-label="Upload file">
-                        <div class="upload-content">
-                            <div class="upload-icon">📁</div>
-                            <p class="upload-text"><strong>Drop your image or video here</strong></p>
-                            <p class="upload-subtext">or</p>
-                            <button type="button" class="btn btn-primary" id="btn-browse">Browse Files</button>
-                            <input type="file" id="file-input" accept="image/*,video/*" hidden>
-                        </div>
-                        <div class="upload-formats">
-                            <span>📷 Images:</span> JPG, JPEG, PNG, WebP, AVIF, GIF
-                            <span class="separator">•</span>
-                            <span>🎥 Videos:</span> MP4, WebM, MOV, MKV, AVI
-                        </div>
-                    </div>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">IMAGES + VIDEOS</p>
+        <h1>Compress your media</h1>
+        <p>Convert, resize and reduce file size with a CloudConvert-inspired batch queue. Add up to <strong>100 files</strong> at once.</p>
+      </div>
+      <div class="hero-badge">100 files max</div>
+    </section>
 
-                    <div class="privacy-badges">
-                        <span class="badge">🔒 Private</span>
-                        <span class="badge">⚡ Free</span>
-                        <span class="badge">✨ Smart Compression</span>
-                    </div>
-                    <p class="privacy-note">Your files stay on your device. Compression happens locally in your browser.</p>
-                </div>
-            </section>
+    <section id="upload-area" class="dropzone" tabindex="0" role="button" aria-label="Add images or videos">
+      <input id="file-input" type="file" accept="image/*,video/*" multiple hidden>
+      <div class="drop-icon">⇧</div>
+      <h2>Drop your files here</h2>
+      <p>or</p>
+      <button id="btn-browse" class="btn btn-primary" type="button">Browse Files</button>
+      <small>JPG · PNG · WEBP · AVIF · GIF · MP4 · WEBM · MOV · MKV · AVI</small>
+    </section>
 
-            <!-- File Info & Settings Panel -->
-            <section class="panel compressor-settings hidden" id="settings-section">
-                <div class="panel-head">
-                    <h2>Compression Settings</h2>
-                    <button type="button" class="btn btn-ghost" id="btn-change-file">Change File</button>
-                </div>
+    <section class="queue-card">
+      <div class="queue-head">
+        <div>
+          <h2>Files <span id="file-count" class="count-pill">0 / 100</span></h2>
+          <p id="queue-summary" class="muted">Add images or videos to get started.</p>
+        </div>
+        <button id="btn-clear" class="btn btn-ghost" type="button" disabled>Clear all</button>
+      </div>
+      <div id="file-list" class="file-list">
+        <div class="empty-queue">Your selected files will appear here.</div>
+      </div>
+      <div class="queue-footer">
+        <button id="btn-add-more" class="btn btn-secondary" type="button">＋ Add more files</button>
+        <div class="queue-actions">
+          <button id="btn-compress" class="btn btn-primary btn-compress" type="button" disabled>Compress all</button>
+        </div>
+      </div>
+    </section>
 
-                <div class="file-info-card">
-                    <div class="file-preview" id="file-preview-container">
-                        <!-- Preview will be inserted here -->
-                    </div>
-                    <div class="file-details">
-                        <h3 id="file-name">filename.mp4</h3>
-                        <div class="file-meta">
-                            <span id="file-type">MP4</span>
-                            <span class="separator">•</span>
-                            <span id="file-size">30.4 MB</span>
-                            <span class="separator" id="meta-separator">•</span>
-                            <span id="file-dimensions">1920 × 1080</span>
-                            <span class="separator" id="duration-separator">•</span>
-                            <span id="file-duration">00:00</span>
-                        </div>
-                    </div>
-                </div>
+    <section id="progress-section" class="panel hidden">
+      <div class="section-title"><h2>Compression progress</h2><strong id="progress-percent">0%</strong></div>
+      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+      <p id="progress-status" class="progress-status">Waiting…</p>
+      <p id="progress-details" class="muted"></p>
+      <button id="btn-cancel" class="btn btn-secondary" type="button">Cancel</button>
+    </section>
 
-                <div class="settings-grid">
-                    <!-- Smart Compression Toggle -->
-                    <div class="setting-group full-width">
-                        <label class="toggle-label">
-                            <input type="checkbox" id="smart-compression" checked>
-                            <span class="toggle-switch"></span>
-                            <span class="toggle-text"><strong>Smart Compression</strong> — Automatically optimize settings for best quality/size ratio</span>
-                        </label>
-                    </div>
+    <section id="results-section" class="panel hidden">
+      <div class="section-title"><div><h2>Compression complete</h2><p id="results-summary" class="muted"></p></div><button id="btn-reset" class="btn btn-secondary" type="button">Start over</button></div>
+      <div id="results-list" class="results-list"></div>
+      <div class="results-footer">
+        <div class="result-total"><span>Total</span><strong id="total-result-size">—</strong></div>
+        <button id="btn-download-all" class="btn btn-primary" type="button">Download all as ZIP</button>
+      </div>
+    </section>
+  </main>
 
-                    <!-- Output Format -->
-                    <div class="setting-group">
-                        <label for="output-format">Output Format</label>
-                        <select id="output-format">
-                            <option value="auto">Auto (Recommended)</option>
-                            <optgroup label="Images">
-                                <option value="image/webp">WebP</option>
-                                <option value="image/avif">AVIF</option>
-                                <option value="image/jpeg">JPEG</option>
-                                <option value="image/png">PNG</option>
-                            </optgroup>
-                            <optgroup label="Videos">
-                                <option value="video/mp4">MP4 (H.264)</option>
-                                <option value="video/webm">WebM (VP9)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <!-- Quality Preset -->
-                    <div class="setting-group">
-                        <label for="quality-preset">Quality Preset</label>
-                        <select id="quality-preset">
-                            <option value="max">Maximum Quality</option>
-                            <option value="high">High Quality</option>
-                            <option value="balanced" selected>Balanced</option>
-                            <option value="small">Smallest File</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-
-                    <!-- Target Size -->
-                    <div class="setting-group">
-                        <label for="target-size">Target File Size (Optional)</label>
-                        <div class="input-with-unit">
-                            <input type="number" id="target-size" placeholder="e.g., 1" min="0.1" step="0.1">
-                            <select id="target-unit">
-                                <option value="MB">MB</option>
-                                <option value="KB">KB</option>
-                            </select>
-                        </div>
-                        <p class="hint" id="target-warning"></p>
-                    </div>
-
-                    <!-- Resolution -->
-                    <div class="setting-group">
-                        <label for="resolution">Resolution</label>
-                        <select id="resolution">
-                            <option value="original">Original</option>
-                            <option value="4k">4K (2160p)</option>
-                            <option value="1440p">1440p</option>
-                            <option value="1080p">1080p</option>
-                            <option value="720p">720p</option>
-                            <option value="480p">480p</option>
-                        </select>
-                    </div>
-
-                    <!-- Custom Quality Slider -->
-                    <div class="setting-group full-width" id="custom-quality-group">
-                        <label for="quality-slider">Quality: <span id="quality-value">75</span>%</label>
-                        <input type="range" id="quality-slider" min="1" max="100" value="75">
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-primary" id="btn-compress">
-                        <span class="btn-text">Compress</span>
-                        <span class="btn-loading hidden">
-                            <span class="spinner"></span>
-                            Compressing...
-                        </span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="btn-cancel" disabled>Cancel</button>
-                </div>
-            </section>
-
-            <!-- Progress Section -->
-            <section class="panel progress-panel hidden" id="progress-section">
-                <div class="panel-head">
-                    <h2 id="progress-title">Preparing...</h2>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                    </div>
-                    <div class="progress-info">
-                        <span id="progress-percent">0%</span>
-                        <span id="progress-status">Initializing compression engine...</span>
-                    </div>
-                    <div class="progress-details" id="progress-details"></div>
-                    <div class="elapsed-time" id="elapsed-time">Elapsed: 0s</div>
-                </div>
-            </section>
-
-            <!-- Results Section -->
-            <section class="panel results-panel hidden" id="results-section">
-                <div class="panel-head">
-                    <h2>Compression Complete!</h2>
-                    <button type="button" class="btn btn-ghost" id="btn-reset">Compress Another</button>
-                </div>
-
-                <div class="results-grid">
-                    <!-- Comparison -->
-                    <div class="comparison-container" id="comparison-container">
-                        <!-- Before/After previews will be inserted here -->
-                    </div>
-
-                    <!-- Stats -->
-                    <div class="stats-card">
-                        <h3>Results</h3>
-                        <div class="stat-row">
-                            <span class="stat-label">Original Size:</span>
-                            <span class="stat-value" id="stat-original-size">30.4 MB</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Compressed Size:</span>
-                            <span class="stat-value" id="stat-compressed-size">2.1 MB</span>
-                        </div>
-                        <div class="stat-row highlight">
-                            <span class="stat-label">Saved:</span>
-                            <span class="stat-value savings" id="stat-saved">93.1%</span>
-                        </div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-row">
-                            <span class="stat-label">Original Resolution:</span>
-                            <span class="stat-value" id="stat-original-res">1920 × 1080</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Compressed Resolution:</span>
-                            <span class="stat-value" id="stat-compressed-res">1280 × 720</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Format:</span>
-                            <span class="stat-value" id="stat-format">MP4</span>
-                        </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Quality:</span>
-                            <span class="stat-value" id="stat-quality">High</span>
-                        </div>
-                        
-                        <div class="savings-visual">
-                            <div class="savings-bar">
-                                <div class="savings-before" id="savings-before"></div>
-                                <div class="savings-after" id="savings-after"></div>
-                            </div>
-                            <div class="savings-label">
-                                <span id="savings-percent-text">93% smaller</span>
-                            </div>
-                        </div>
-
-                        <button type="button" class="btn btn-primary btn-large" id="btn-download">
-                            📥 Download Compressed File
-                        </button>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p>Media compression happens entirely in your browser. Your files are never uploaded to any server.</p>
-        </footer>
+  <div id="options-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="options-title">
+    <div class="modal-card">
+      <div class="modal-head"><div><p class="eyebrow">FILE OPTIONS</p><h2 id="options-title">Options</h2></div><button id="btn-close-options" class="icon-btn" type="button" aria-label="Close">×</button></div>
+      <div id="options-file-name" class="modal-file-name"></div>
+      <div class="options-grid">
+        <label>Output format<select id="opt-format"></select></label>
+        <label>Quality<select id="opt-quality"><option value="max">Maximum</option><option value="high">High</option><option value="balanced" selected>Balanced</option><option value="small">Small</option><option value="custom">Custom</option></select></label>
+        <label id="opt-quality-custom-wrap" class="hidden">Custom quality<input id="opt-quality-custom" type="range" min="20" max="95" value="75"><span id="opt-quality-value">75%</span></label>
+        <label>Target size<input id="opt-target" type="number" min="0" step="0.1" placeholder="Optional"><span class="input-suffix"><select id="opt-target-unit"><option>MB</option><option>KB</option></select></span></label>
+        <label>Resolution<select id="opt-resolution"><option value="original">Original</option><option value="2160">4K</option><option value="1440">1440p</option><option value="1080">1080p</option><option value="720">720p</option><option value="480">480p</option></select></label>
+        <label class="video-only">Video codec<select id="opt-codec"><option value="h264">H.264</option><option value="vp9">VP9 / WebM</option></select></label>
+        <label class="video-only">Frame rate<select id="opt-fps"><option value="original">Original</option><option value="30">30 FPS</option><option value="24">24 FPS</option><option value="15">15 FPS</option></select></label>
+        <label class="video-only">Audio<select id="opt-audio"><option value="copy">Keep audio</option><option value="aac">AAC</option><option value="opus">Opus</option><option value="none">Remove audio</option></select></label>
+      </div>
+      <label class="check-row"><input id="opt-smart" type="checkbox" checked> Keep the original when compression would make the file larger</label>
+      <p id="options-note" class="hint"></p>
+      <div class="modal-actions"><button id="btn-apply-options" class="btn btn-primary" type="button">Apply</button></div>
     </div>
+  </div>
 
-    <script src="{{ url_for('static', filename='compressor.js') }}"></script>
+  <script src="{{ url_for('static', filename='compressor.js') }}"></script>
 </body>
 </html>
